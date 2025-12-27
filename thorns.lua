@@ -157,43 +157,24 @@ function setup_params()
   params:add_separator("Transformations")
   
   params:add{
-    type = "option",
-    id = "transform_pitch",
-    name = "Pitch Mod",
-    options = {"Off", "On"},
-    default = 2
+    type = "control",
+    id = "pitch_mod_prob",
+    name = "Pitch Mod Prob",
+    controlspec = controlspec.new(0.0, 1.0, 'lin', 0.01, 0.5),
   }
   
   params:add{
-    type = "option",
-    id = "transform_velocity",
-    name = "Velocity Mod",
-    options = {"Off", "On"},
-    default = 2
+    type = "control",
+    id = "velocity_mod_prob",
+    name = "Velocity Mod Prob",
+    controlspec = controlspec.new(0.0, 1.0, 'lin', 0.01, 0.5),
   }
   
   params:add{
-    type = "option",
-    id = "transform_mutate",
-    name = "Mutate",
-    options = {"Off", "On"},
-    default = 2
-  }
-  
-  params:add{
-    type = "option",
-    id = "transform_gate_chaos",
-    name = "Gate Chaos",
-    options = {"Off", "On"},
-    default = 2
-  }
-  
-  params:add{
-    type = "option",
-    id = "transform_time_shift",
-    name = "Time Shift",
-    options = {"Off", "On"},
-    default = 2
+    type = "control",
+    id = "time_shift_prob",
+    name = "Time Shift Prob",
+    controlspec = controlspec.new(0.0, 1.0, 'lin', 0.01, 0.5),
   }
   
   params:add{
@@ -374,24 +355,6 @@ function start_playback()
   if trunk_dirty then
     print("Generating tree...")
     
-    -- Get enabled transformations
-    local enabled_transforms = {}
-    if params:get("transform_pitch") == 2 then
-      table.insert(enabled_transforms, Transforms.PITCH_MOD)
-    end
-    if params:get("transform_velocity") == 2 then
-      table.insert(enabled_transforms, Transforms.VELOCITY_MOD)
-    end
-    if params:get("transform_mutate") == 2 then
-      table.insert(enabled_transforms, Transforms.MUTATE)
-    end
-    if params:get("transform_gate_chaos") == 2 then
-      table.insert(enabled_transforms, Transforms.GATE_CHAOS)
-    end
-    if params:get("transform_time_shift") == 2 then
-      table.insert(enabled_transforms, Transforms.TIME_SHIFT)
-    end
-    
     tree = Tree.generate(
       trunk,
       pattern_length,
@@ -399,7 +362,9 @@ function start_playback()
       params:get("gate_chaos_prob"),
       params:get("mutation_prob"),
       params:get("shift_freedom"),
-      enabled_transforms
+      params:get("pitch_mod_prob"),
+      params:get("velocity_mod_prob"),
+      params:get("time_shift_prob")
     )
     print("Tree generated, depth:", branches)
     print("Pattern length:", pattern_length)
