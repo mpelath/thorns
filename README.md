@@ -62,13 +62,13 @@ Fractal MIDI sequencer for norns + grid
 - **Transformations:**
   - **Pitch Mod Prob:** Probability of applying pitch modification (0.0-1.0, default 0.5)
   - **Velocity Mod Prob:** Probability of applying velocity modification (0.0-1.0, default 0.5)
-  - **Time Shift Prob:** Probability of applying time shift (0.0-1.0, default 0.5)
 - **Gate Chaos Probability:** Chance per step for gate chaos (0.0-1.0, default 0.05)
 - **Mutation Probability:** Chance per step for mutation (0.0-1.0, default 0.5)
 - **Shift Freedom:** Controls time shift distribution (0.0-1.0, default 0.5)
   - 0.0: no shifting (always stays in place)
   - 1.0: all shifts equally likely (uniform distribution)
   - 0.0-1.0: favors smaller shifts
+  - Note: Time shift is always applied, but shift_freedom controls its behavior
 - **Audio Engine:**
   - **Release:** Note release time (0.1-5.0s, default 0.5)
   - **Cutoff:** Filter cutoff frequency (50-5000Hz, default 1000)
@@ -88,14 +88,17 @@ Fractal MIDI sequencer for norns + grid
 ### Transformation Tree
 When you hit play with a modified trunk:
 1. Generates a complete 7-level binary tree
-2. At each branch level, each transformation is independently checked against its probability
-3. Pitch modification, velocity modification, and time shift each have their own probability (0.0-1.0)
-4. Gate chaos and mutation are always applied, but use per-step probability logic
-5. Multiple transformations can be applied to the same branch (they stack in sequence)
-6. Pre-generates all random values (so playback is deterministic)
-7. Stores full sequences at every node
+2. At each branch level:
+   - Pitch modification and velocity modification are checked against their probabilities
+   - Time shift, gate chaos, and mutation are always applied (but have their own control parameters)
+3. Multiple transformations can be applied to the same branch (they stack in sequence)
+4. Pre-generates all random values (so playback is deterministic)
+5. Stores full sequences at every node
 
-If all transformation probabilities are 0.0, gate chaos and mutation still apply (with their per-step probabilities). To truly disable everything, set all probabilities to 0.0.
+Control parameters:
+- Pitch/Velocity Mod Prob: 0.0 = never applies, 1.0 = always applies
+- Shift Freedom: 0.0 = never shifts, 1.0 = all shift amounts equally likely
+- Gate Chaos/Mutation Prob: per-step probabilities (even when transformation "always applies")
 
 ### Playback
 - Path parameter (0.0-0.99) determines which branch to follow at each level
