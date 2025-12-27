@@ -1,5 +1,5 @@
 -- Thorns
--- v1.1.0 @mpelath
+-- v1.1.1 @mpelath
 -- llllllll.co/t/73644
 -- Fractal sequencer
 -- 
@@ -167,13 +167,6 @@ function setup_params()
     type = "control",
     id = "velocity_mod_prob",
     name = "Velocity Mod Prob",
-    controlspec = controlspec.new(0.0, 1.0, 'lin', 0.01, 0.5),
-  }
-  
-  params:add{
-    type = "control",
-    id = "time_shift_prob",
-    name = "Time Shift Prob",
     controlspec = controlspec.new(0.0, 1.0, 'lin', 0.01, 0.5),
   }
   
@@ -363,8 +356,7 @@ function start_playback()
       params:get("mutation_prob"),
       params:get("shift_freedom"),
       params:get("pitch_mod_prob"),
-      params:get("velocity_mod_prob"),
-      params:get("time_shift_prob")
+      params:get("velocity_mod_prob")
     )
     print("Tree generated, depth:", branches)
     print("Pattern length:", pattern_length)
