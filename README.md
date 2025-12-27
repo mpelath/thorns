@@ -60,11 +60,9 @@ Fractal MIDI sequencer for norns + grid
 - **Base Pitch:** Root note of the 3-octave range (C0-C4)
 - **Scale:** Quantization scale (Major, Minor, Dorian, etc.)
 - **Transformations:**
-  - **Pitch Mod:** Enable/disable pitch modification (default: On)
-  - **Velocity Mod:** Enable/disable velocity modification (default: On)
-  - **Mutate:** Enable/disable mutation (default: On)
-  - **Gate Chaos:** Enable/disable gate chaos (default: On)
-  - **Time Shift:** Enable/disable time shift rotation (default: On)
+  - **Pitch Mod Prob:** Probability of applying pitch modification (0.0-1.0, default 0.5)
+  - **Velocity Mod Prob:** Probability of applying velocity modification (0.0-1.0, default 0.5)
+  - **Time Shift Prob:** Probability of applying time shift (0.0-1.0, default 0.5)
 - **Gate Chaos Probability:** Chance per step for gate chaos (0.0-1.0, default 0.05)
 - **Mutation Probability:** Chance per step for mutation (0.0-1.0, default 0.5)
 - **Shift Freedom:** Controls time shift distribution (0.0-1.0, default 0.5)
@@ -90,11 +88,14 @@ Fractal MIDI sequencer for norns + grid
 ### Transformation Tree
 When you hit play with a modified trunk:
 1. Generates a complete 7-level binary tree
-2. At each branch level, randomly selects from enabled transformation pairs
-3. Pre-generates all random values (so playback is deterministic)
-4. Stores full sequences at every node
+2. At each branch level, each transformation is independently checked against its probability
+3. Pitch modification, velocity modification, and time shift each have their own probability (0.0-1.0)
+4. Gate chaos and mutation are always applied, but use per-step probability logic
+5. Multiple transformations can be applied to the same branch (they stack in sequence)
+6. Pre-generates all random values (so playback is deterministic)
+7. Stores full sequences at every node
 
-You can enable/disable individual transformations in PARAMS to control which types are used in the tree. If all transformations are disabled, only the trunk plays.
+If all transformation probabilities are 0.0, gate chaos and mutation still apply (with their per-step probabilities). To truly disable everything, set all probabilities to 0.0.
 
 ### Playback
 - Path parameter (0.0-0.99) determines which branch to follow at each level
@@ -172,10 +173,13 @@ All random values are pre-generated when tree is built, so the same path always 
 - Use short patterns (4-8 steps) for rhythmic variation
 - Use longer patterns (12-16 steps) for melodic development
 - Try different scales - quantization happens at output, so transformations work in chromatic space
-- Adjust transformation probabilities (Gate Chaos, Mutation) and Shift Freedom to taste
-- Enable/disable specific transformations in PARAMS to isolate their effects
+- Adjust transformation probabilities to control how often each type applies
+- Set a transformation probability to 0.0 to completely disable it
+- Set a transformation probability to 1.0 to always apply it
+- Try combinations - for example, high pitch mod + low velocity mod for melodic variation with consistent dynamics
 - Lower Shift Freedom (< 0.3) for subtle rhythmic variations
 - Higher Shift Freedom (> 0.7) for more dramatic pattern rearrangement
+- Transformations stack - multiple can apply to the same branch, creating complex combinations
 
 ## Credits
 
