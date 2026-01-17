@@ -1,5 +1,5 @@
 -- Thorns
--- v1.1.1 @mpelath
+-- v1.2 @mpelath
 -- llllllll.co/t/73644
 -- Fractal sequencer
 -- 
