@@ -275,19 +275,14 @@ end
 function enc(n, d)
   if n == 1 then
     if k1_held then
-      -- K1+E1: Octave shift
-      if not playing then
-        octave_offset = util.clamp(octave_offset + d, 0, 2)
-        GridDisplay.set_octave(octave_offset)
-        screen_dirty = true
-      end
+      -- K1+E1: Octave shift (anytime)
+      octave_offset = util.clamp(octave_offset + d, 0, 2)
+      GridDisplay.set_octave(octave_offset)
+      screen_dirty = true
     else
-      -- E1: Branches (only when stopped)
-      if not playing then
-        branches = util.clamp(branches + d, 0, 7)
-        trunk_dirty = true
-        screen_dirty = true
-      end
+      -- E1: Branches (anytime - controls playback depth)
+      branches = util.clamp(branches + d, 0, 7)
+      screen_dirty = true
     end
   elseif n == 2 then
     if k1_held then
@@ -348,17 +343,18 @@ function start_playback()
   if trunk_dirty then
     print("Generating tree...")
     
+    local max_depth = 7
     tree = Tree.generate(
       trunk,
       pattern_length,
-      branches,
+      max_depth,
       params:get("gate_chaos_prob"),
       params:get("mutation_prob"),
       params:get("shift_freedom"),
       params:get("pitch_mod_prob"),
       params:get("velocity_mod_prob")
     )
-    print("Tree generated, depth:", branches)
+    print("Tree generated with max depth:", max_depth)
     print("Pattern length:", pattern_length)
     trunk_dirty = false
   end
@@ -484,37 +480,39 @@ function redraw()
     -- Play mode display
     screen.level(15)
     screen.move(0, 10)
-    screen.text("PLAYING")
+    screen.text("PLAYING (K2 to stop)")
     
+    screen.level(4)
     screen.move(0, 25)
-    screen.text("Branches: " .. branches)
+    screen.text("E1: Branches: " .. branches .. " (Lvl " .. current_level .. ")")
     
     screen.move(0, 35)
-    screen.text("Path: " .. string.format("%.2f", path))
+    screen.text("E2: Path: " .. string.format("%.2f", path))
     
     screen.move(0, 45)
-    screen.text("Level: " .. current_level .. "/" .. branches)
+    screen.text("E3: Tempo: " .. tempo)
     
     screen.move(0, 55)
-    screen.text("Tempo: " .. tempo)
+    screen.text("K1+E1: Octave: " .. (octave_offset + 1))
     
   else
     -- Edit mode display
     screen.level(15)
     screen.move(0, 10)
-    screen.text("EDIT")
+    screen.text("EDIT (K2 to play)")
     
+    screen.level(4)
     screen.move(0, 25)
-    screen.text("Length: " .. pattern_length)
+    screen.text("E1: Branches: " .. branches)
     
     screen.move(0, 35)
-    screen.text("Branches: " .. branches)
+    screen.text("K1+E1: Octave: " .. (octave_offset + 1))
     
     screen.move(0, 45)
-    screen.text("Octave: " .. (octave_offset + 1))
+    screen.text("K1+E2: Length: " .. pattern_length)
     
     screen.move(0, 55)
-    screen.text("Screen: " .. (edit_screen == 1 and "Gate/Pitch" or "Velocity"))
+    screen.text("K3: " .. (edit_screen == 1 and "Gate/Pitch" or "Velocity"))
   end
   
   screen.update()
