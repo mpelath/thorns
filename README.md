@@ -27,17 +27,17 @@ Fractal MIDI sequencer for norns + grid
 ## Controls
 
 ### Encoders
-- **E1:** Branches (tree depth: 0-7)
-- **E2:** Path (navigate variations: 0.0-0.99)
-- **E3:** Tempo (20-300 BPM)
+- **E1:** Branches (tree depth: 0-7) - changeable anytime
+- **E2:** Path (navigate variations: 0.0-0.99) - changeable anytime
+- **E3:** Tempo (20-300 BPM) - changeable anytime
 
 ### Keys
 - **K2:** Play/Stop
 - **K3:** Toggle gate/pitch ↔ velocity screen (edit mode only)
 
 ### Key Combinations
-- **K1+E1:** Shift octave window (edit mode)
-- **K1+E2:** Change pattern length (2-16 steps)
+- **K1+E1:** Shift octave window (move visible pitch range up/down) - changeable anytime
+- **K1+E2:** Change pattern length (2-16 steps) - edit mode only
 
 ### Grid
 
@@ -52,7 +52,8 @@ Fractal MIDI sequencer for norns + grid
 **Play Mode:**
 - Displays currently playing transformed sequence
 - Current step highlighted
-- Shows notes in current octave window
+- Shows notes in current octave window (use K1+E1 to shift view)
+- Read-only display
 
 ## Parameters Menu
 
@@ -87,7 +88,7 @@ Fractal MIDI sequencer for norns + grid
 
 ### Transformation Tree
 When you hit play with a modified trunk:
-1. Generates a complete 7-level binary tree
+1. Generates a complete 7-level binary tree (always maximum depth)
 2. At each branch level:
    - Pitch modification and velocity modification are checked against their probabilities
    - Time shift, gate chaos, and mutation are always applied (but have their own control parameters)
@@ -95,16 +96,20 @@ When you hit play with a modified trunk:
 4. Pre-generates all random values (so playback is deterministic)
 5. Stores full sequences at every node
 
+The Branches parameter (0-7) controls how deep into the tree you play before looping back to the trunk. The tree is always generated at full depth, so you can adjust Branches in real-time during playback without regenerating.
+
 Control parameters:
 - Pitch/Velocity Mod Prob: 0.0 = never applies, 1.0 = always applies
 - Shift Freedom: 0.0 = never shifts, 1.0 = all shift amounts equally likely
 - Gate Chaos/Mutation Prob: per-step probabilities (even when transformation "always applies")
 
 ### Playback
+- Branches parameter (0-7) determines playback depth (changeable in real-time)
 - Path parameter (0.0-0.99) determines which branch to follow at each level
 - Path value is decomposed into binary choices (left/right at each level)
-- Plays trunk → level 1 → level 2 → ... → level N (where N = Branches)
-- Then loops back to trunk
+- Playback sequence: trunk → level 1 → level 2 → ... → level N (where N = Branches) → loop
+- Branches = 0 plays only the trunk
+- Tree is always generated at maximum depth (7 levels), Branches just controls how deep you play
 
 **Example:** If Branches = 2 and Path = 0.3:
 - Path 0.3 falls in range [0.25, 0.375) = binary "01"
