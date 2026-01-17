@@ -1,5 +1,5 @@
 -- Thorns
--- v1.2 @mpelath
+-- v1.2.1 @mpelath
 -- llllllll.co/t/73644
 -- Fractal sequencer
 -- 
@@ -233,8 +233,8 @@ function setup_params()
     end
   }
   
-  -- Initialize MIDI
-  midi_out = midi.connect(1)
+  -- Initialize MIDI from parameter
+  midi_out = midi.connect(params:get("midi_device"))
 end
 
 function update_scale(scale_id)
