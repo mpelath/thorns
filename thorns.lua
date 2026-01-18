@@ -1,4 +1,6 @@
 -- Thorns
+-- v1.3 @mpelath
+-- llllllll.co/t/73644
 -- Fractal sequencer
 -- 
 -- Grid required
