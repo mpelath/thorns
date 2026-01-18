@@ -30,8 +30,6 @@ function Tree.generate(trunk, pattern_length, max_depth, gate_chaos_prob, mutati
     tree.nodes[level] = {}
     local prev_level = tree.nodes[level - 1]
     
-    print("Generating level", level, "from", #prev_level, "parent nodes")
-    
     -- Each node in previous level branches into two nodes
     for node_idx = 1, #prev_level do
       local parent_sequence = prev_level[node_idx]
@@ -106,8 +104,6 @@ function Tree.generate(trunk, pattern_length, max_depth, gate_chaos_prob, mutati
       table.insert(tree.nodes[level], left_sequence)
       table.insert(tree.nodes[level], right_sequence)
     end
-    
-    print("Level", level, "has", #tree.nodes[level], "nodes")
   end
   
   return tree
@@ -116,7 +112,6 @@ end
 -- Get sequence at specific level and path
 function Tree.get_sequence(tree, level, path, max_depth)
   if not tree then
-    print("ERROR: tree is nil")
     return nil
   end
   
@@ -135,12 +130,6 @@ function Tree.get_sequence(tree, level, path, max_depth)
   
   -- Clamp to valid range
   branch_index = math.max(1, math.min(num_branches, branch_index))
-  
-  print("Getting level", level, "branch", branch_index, "of", num_branches)
-  print("tree.nodes[" .. level .. "] exists:", tree.nodes[level] ~= nil)
-  if tree.nodes[level] then
-    print("tree.nodes[" .. level .. "] has", #tree.nodes[level], "entries")
-  end
   
   return tree.nodes[level][branch_index]
 end
