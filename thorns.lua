@@ -1,6 +1,4 @@
 -- Thorns
--- v1.2.1 @mpelath
--- llllllll.co/t/73644
 -- Fractal sequencer
 -- 
 -- Grid required
@@ -13,10 +11,11 @@
 -- K1+E1: Octave shift
 -- K1+E2: Pattern length
 
-engine.name = 'PolyPerc'
-
+local nb = require 'nb/lib/nb'
 local g = grid.connect()
 local musicutil = require('musicutil')
+
+local voice_player -- nb voice player
 
 -- Modules
 local Tree = include('thorns/lib/tree')
@@ -55,6 +54,9 @@ local tempo = 120
 local scale = nil
 
 function init()
+  -- Initialize nb voice library
+  nb:init()
+  
   -- Initialize trunk
   for i = 1, 16 do
     trunk[i] = {
@@ -97,6 +99,10 @@ end
 
 function setup_params()
   params:add_separator("Thorns")
+  
+  -- Add nb voice selector
+  nb:add_param("voice", "Voice")
+  nb:add_player_params()
   
   -- Output
   params:add{
@@ -201,40 +207,11 @@ function setup_params()
   }
   
   -- Add PolyPerc engine params
-  params:add_separator("Audio Engine")
-  
-  params:add{
-    type = "control",
-    id = "release",
-    name = "Release",
-    controlspec = controlspec.new(0.1, 5.0, 'lin', 0.01, 0.5),
-    action = function(value)
-      engine.release(value)
-    end
-  }
-  
-  params:add{
-    type = "control",
-    id = "cutoff",
-    name = "Cutoff",
-    controlspec = controlspec.new(50, 5000, 'exp', 1, 1000),
-    action = function(value)
-      engine.cutoff(value)
-    end
-  }
-  
-  params:add{
-    type = "control",
-    id = "gain",
-    name = "Gain",
-    controlspec = controlspec.new(0.0, 4.0, 'lin', 0.01, 1.0),
-    action = function(value)
-      engine.gain(value)
-    end
-  }
-  
   -- Initialize MIDI from parameter
   midi_out = midi.connect(params:get("midi_device"))
+  
+  -- Get nb voice player
+  voice_player = params:lookup_param("voice"):get_player()
 end
 
 function update_scale(scale_id)
@@ -424,12 +401,11 @@ function step()
     
     local output_mode = params:get("output_mode")
     
-    -- Audio engine output
+    -- Audio engine output via nb
     if output_mode == 1 or output_mode == 3 then
-      local note_hz = musicutil.note_num_to_freq(midi_note)
-      local amp = note.velocity / 127.0
-      engine.amp(amp)
-      engine.hz(note_hz)
+      local vel = note.velocity / 127.0
+      -- Note duration: 90% of a 16th note (1/4 beat)
+      voice_player:play_note(midi_note, vel, 0.9 * 1/4)
     end
     
     -- MIDI output

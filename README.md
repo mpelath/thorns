@@ -6,7 +6,9 @@ Fractal MIDI sequencer for norns + grid
 
 - norns (any version)
 - Grid (16x8 minimum)
-- MIDI output device
+- nb (nota bene) library
+- At least one nb voice installed (recommended: emplaitress or polyperc)
+- Optional: MIDI output device
 
 ## Features
 
@@ -57,6 +59,8 @@ Fractal MIDI sequencer for norns + grid
 
 ## Parameters Menu
 
+- **Voice:** Select nb voice (synth engine) - choose from installed nb voices
+- **Voice Parameters:** Each nb voice has its own set of parameters (varies by voice)
 - **Output Mode:** Audio / MIDI / Both (default: Audio)
 - **Base Pitch:** Root note of the 3-octave range (C0-C4)
 - **Scale:** Quantization scale (Major, Minor, Dorian, etc.)
@@ -70,10 +74,6 @@ Fractal MIDI sequencer for norns + grid
   - 1.0: all shifts equally likely (uniform distribution)
   - 0.0-1.0: favors smaller shifts
   - Note: Time shift is always applied, but shift_freedom controls its behavior
-- **Audio Engine:**
-  - **Release:** Note release time (0.1-5.0s, default 0.5)
-  - **Cutoff:** Filter cutoff frequency (50-5000Hz, default 1000)
-  - **Gain:** Output gain (0.0-4.0, default 1.0)
 - **MIDI Output Channel:** 1-16
 - **MIDI Device:** Virtual or hardware device
 - **Clock Source:** Internal (only)
@@ -169,9 +169,28 @@ All random values are pre-generated when tree is built, so the same path always 
 
 ## Installation
 
-1. Copy the `thorns` folder to `~/dust/code/`
-2. Restart norns or run `SYSTEM > RESTART` from the norns menu
+### Installing nb voices (first time setup)
+
+Thorns requires the nb (nota bene) library and at least one nb voice. Install voices using maiden:
+
+```
+;install https://github.com/sixolet/emplaitress
+```
+
+Recommended voices to start:
+- `emplaitress` - Polyphonic MI Plaits (versatile, many synthesis modes)
+- `doubledecker` - 2-layer synth (CS-80 style)
+- `polyperc` - PolyPerc engine
+
+Enable voices in `SYSTEM > MODS` then `SYSTEM > RESTART`.
+
+### Installing Thorns
+
+1. Install Thorns (if not already done via maiden project manager)
+2. The nb library is included as a submodule with Thorns
 3. Select `THORNS` from the norns script selection
+4. Go to `PARAMETERS > Voice` and select an installed nb voice
+5. Adjust voice-specific parameters as desired
 
 ## Tips
 
@@ -199,7 +218,7 @@ Built for norns.
 
 ## License
 
-Copyright (c) 2025 Marc Pelath
+Copyright (c) 2025 [Your Name]
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -213,3 +232,4 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
+
