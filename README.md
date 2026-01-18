@@ -218,7 +218,7 @@ Built for norns.
 
 ## License
 
-Copyright (c) 2025 [Your Name]
+Copyright (c) 2025 Marc Pelath
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
