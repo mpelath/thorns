@@ -1,5 +1,5 @@
 -- Thorns
--- v1.3 @mpelath
+-- v1.3.1 @mpelath
 -- llllllll.co/t/73644
 -- Fractal sequencer
 -- 
@@ -199,16 +199,6 @@ function setup_params()
     controlspec = controlspec.new(0.0, 1.0, 'lin', 0.01, 0.5),
   }
   
-  -- Clock
-  params:add{
-    type = "option",
-    id = "clock_source",
-    name = "Clock Source",
-    options = {"Internal"},
-    default = 1
-  }
-  
-  -- Add PolyPerc engine params
   -- Initialize MIDI from parameter
   midi_out = midi.connect(params:get("midi_device"))
   
@@ -320,8 +310,6 @@ end
 function start_playback()
   -- Generate tree if trunk changed
   if trunk_dirty then
-    print("Generating tree...")
-    
     local max_depth = 7
     tree = Tree.generate(
       trunk,
@@ -333,8 +321,6 @@ function start_playback()
       params:get("pitch_mod_prob"),
       params:get("velocity_mod_prob")
     )
-    print("Tree generated with max depth:", max_depth)
-    print("Pattern length:", pattern_length)
     trunk_dirty = false
   end
   
@@ -373,7 +359,6 @@ end
 
 function step()
   step_position = step_position + 1
-  print("Step:", step_position, "Level:", current_level)
   
   -- Get current sequence from tree
   current_sequence = Tree.get_sequence(tree, current_level, path, branches)
