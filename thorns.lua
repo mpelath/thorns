@@ -1,5 +1,5 @@
 -- Thorns
--- v1.3.1 @mpelath
+-- v1.3.2 @mpelath
 -- llllllll.co/t/73644
 -- Fractal sequencer
 -- 
@@ -16,8 +16,6 @@
 local nb = require 'nb/lib/nb'
 local g = grid.connect()
 local musicutil = require('musicutil')
-
-local voice_player -- nb voice player
 
 -- Modules
 local Tree = include('thorns/lib/tree')
@@ -202,8 +200,6 @@ function setup_params()
   -- Initialize MIDI from parameter
   midi_out = midi.connect(params:get("midi_device"))
   
-  -- Get nb voice player
-  voice_player = params:lookup_param("voice"):get_player()
 end
 
 function update_scale(scale_id)
@@ -308,6 +304,7 @@ function toggle_playback()
 end
 
 function start_playback()
+
   -- Generate tree if trunk changed
   if trunk_dirty then
     local max_depth = 7
@@ -390,11 +387,13 @@ function step()
     
     -- Audio engine output via nb
     if output_mode == 1 or output_mode == 3 then
-      local vel = note.velocity / 127.0
-      -- Note duration: 90% of a 16th note (1/4 beat)
-      voice_player:play_note(midi_note, vel, 0.9 * 1/4)
+      local player = params:lookup_param("voice"):get_player()
+      if player then
+        local vel = note.velocity / 127.0
+        player:play_note(midi_note, vel, 0.9 * 1/4)
+      end
     end
-    
+
     -- MIDI output
     if output_mode == 2 or output_mode == 3 then
       midi_out:note_on(midi_note, note.velocity, params:get("midi_channel"))
