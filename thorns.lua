@@ -48,8 +48,6 @@ local screen_dirty = true
 local screen_refresh = nil
 
 -- Parameters
-local branches = 0
-local path = 0.0
 local tempo = 120
 local scale = nil
 
@@ -99,7 +97,24 @@ end
 
 function setup_params()
   params:add_separator("Thorns")
-  
+
+  -- Branches (tree depth for playback)
+  params:add{
+    type = "number",
+    id = "branches",
+    name = "Branches",
+    min = 0, max = 7,
+    default = 0
+  }
+
+  -- Path (branch selection bias)
+  params:add{
+    type = "control",
+    id = "path",
+    name = "Path",
+    controlspec = controlspec.new(0.0, 0.99, 'lin', 0.01, 0.0)
+  }
+
   -- Add nb voice selector
   nb:add_param("voice", "Voice")
   nb:add_player_params()
@@ -246,7 +261,7 @@ function enc(n, d)
       screen_dirty = true
     else
       -- E1: Branches (anytime - controls playback depth)
-      branches = util.clamp(branches + d, 0, 7)
+      params:delta("branches", d)
       screen_dirty = true
     end
   elseif n == 2 then
@@ -260,7 +275,7 @@ function enc(n, d)
       end
     else
       -- E2: Path
-      path = util.clamp(path + d * 0.01, 0.0, 0.99)
+      params:delta("path", d)
       screen_dirty = true
     end
   elseif n == 3 then
@@ -358,21 +373,21 @@ function step()
   step_position = step_position + 1
   
   -- Get current sequence from tree
-  current_sequence = Tree.get_sequence(tree, current_level, path, branches)
+  current_sequence = Tree.get_sequence(tree, current_level, params:get("path"), params:get("branches"))
   local note_index = ((step_position - 1) % pattern_length) + 1
-  
+
   -- Check if we've completed this level
   if step_position > pattern_length then
     step_position = 1
     current_level = current_level + 1
-    
+
     -- Loop back to trunk after completing all levels
-    if current_level > branches then
+    if current_level > params:get("branches") then
       current_level = 0
     end
-    
+
     -- Get sequence for new level
-    current_sequence = Tree.get_sequence(tree, current_level, path, branches)
+    current_sequence = Tree.get_sequence(tree, current_level, params:get("path"), params:get("branches"))
   end
   
   -- Play note
@@ -446,10 +461,10 @@ function redraw()
     
     screen.level(4)
     screen.move(0, 25)
-    screen.text("E1: Branches: " .. branches .. " (Lvl " .. current_level .. ")")
-    
+    screen.text("E1: Branches: " .. params:get("branches") .. " (Lvl " .. current_level .. ")")
+
     screen.move(0, 35)
-    screen.text("E2: Path: " .. string.format("%.2f", path))
+    screen.text("E2: Path: " .. string.format("%.2f", params:get("path")))
     
     screen.move(0, 45)
     screen.text("E3: Tempo: " .. tempo)
@@ -465,7 +480,7 @@ function redraw()
     
     screen.level(4)
     screen.move(0, 25)
-    screen.text("E1: Branches: " .. branches)
+    screen.text("E1: Branches: " .. params:get("branches"))
     
     screen.move(0, 35)
     screen.text("K1+E1: Octave: " .. (octave_offset + 1))
