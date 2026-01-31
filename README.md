@@ -24,7 +24,7 @@ Fractal MIDI sequencer for norns + grid
 - Scale quantization
 - Grid-based editing with octave windows
 - Separate gate/pitch and velocity editing screens
-- Audio engine (PolyPerc) or MIDI output
+- Audio output via nb voice or MIDI output
 
 ## Controls
 
