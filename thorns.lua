@@ -13,7 +13,7 @@
 -- K1+E1: Octave shift
 -- K1+E2: Pattern length
 
-local nb = require 'nb/lib/nb'
+local nb = include('lib/nb/lib/nb')
 local g = grid.connect()
 local musicutil = require('musicutil')
 
